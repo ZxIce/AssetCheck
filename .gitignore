@@ -5,3 +5,5 @@ ProjectSettings
 Temp
 Assembly-CSharp-Editor.csproj
 AssetCheck.sln
+.idea
+obj
