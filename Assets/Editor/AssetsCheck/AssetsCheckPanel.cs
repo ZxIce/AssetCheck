@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using OfficeOpenXml;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -15,7 +17,7 @@ public class AssetsCheckPanel : EditorWindow
 
     private AssetsCheckSettings _settings;
     private SerializedObject _serializedObject;
-    const string savePath = "Assets/Scripts/Editor/AssetsCheck/settings.asset";
+    const string savePath = "Assets/Editor/AssetsCheck/settings.asset";
     private string[] taglist = new[] {"a", "b"};
     void InitSettings()
     {
@@ -49,7 +51,11 @@ public class AssetsCheckPanel : EditorWindow
         {
             CheckManager.StartChecks(_settings);
         }
-        
+        if (GUILayout.Button("Check and Save", EditorStyles.toolbarButton))
+        {
+            CheckManager.StartChecksAndSaveData(_settings);
+            
+        }
         reorderableList.DoLayoutList();
         _serializedObject.ApplyModifiedProperties();
     }
@@ -145,4 +151,6 @@ public class AssetsCheckPanel : EditorWindow
         }
         return null;
     }
+
+    
 }

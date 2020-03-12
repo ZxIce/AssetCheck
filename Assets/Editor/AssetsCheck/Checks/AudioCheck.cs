@@ -13,6 +13,12 @@ public class AudioCheck : ICheck
         get { return _searchTag;}
         set { _searchTag = value; }
     }
+    private string _assetPath = "";
+    public string AssetPath
+    {
+        get { return _assetPath;}
+        set { _assetPath = value; }
+    }
     private bool _canFix = true;
     public bool CanFix
     {
@@ -21,6 +27,7 @@ public class AudioCheck : ICheck
     }
     public bool Check(string path)
     {
+        _assetPath = path;
         AudioImporter audioImporter =  AssetImporter.GetAtPath(path) as AudioImporter;
         if (audioImporter == null)
         {

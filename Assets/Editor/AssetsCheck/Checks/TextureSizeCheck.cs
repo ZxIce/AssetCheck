@@ -19,8 +19,15 @@ public class TextureSizeCheck : ICheck
         get { return _canFix;}
         set { _canFix = value; }
     }
+    private string _assetPath = "";
+    public string AssetPath
+    {
+        get { return _assetPath;}
+        set { _assetPath = value; }
+    }
     public bool Check(string path)
     {
+        _assetPath = path;
         TextureImporter textureImporter =  AssetImporter.GetAtPath(path) as TextureImporter;
         if (textureImporter == null)
         {

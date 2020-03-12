@@ -12,6 +12,12 @@ public class TextureFormatCheck : ICheck
         get { return _searchTag;}
         set { _searchTag = value; }
     }
+    private string _assetPath = "";
+    public string AssetPath
+    {
+        get { return _assetPath;}
+        set { _assetPath = value; }
+    }
     private bool _canFix = true;
     public bool CanFix
     {
@@ -20,6 +26,7 @@ public class TextureFormatCheck : ICheck
     }
     public bool Check(string path)
     {
+        _assetPath = path;
         TextureImporter textureImporter =  AssetImporter.GetAtPath(path) as TextureImporter;
         if (textureImporter == null)
         {

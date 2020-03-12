@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   filters:
   - valid: 1
-    path: Assets/res
-    CheckTag: 0
-    CheckTagString: TextureFormatCheck
-  - valid: 1
-    path: Assets/res
+    path: Assets/Res/Prefabs/Effect
     CheckTag: 1
+    CheckTagString: GameObjectCountCheck
+  - valid: 0
+    path: Assets/res
+    CheckTag: 4
     CheckTagString: TextureSizeCheck
