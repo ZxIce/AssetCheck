@@ -16,7 +16,7 @@ public class ParticleSystemCheck : ICheck
     [SaveTag("路径")]
     public string _assetPath = "";
     
-    private bool _canFix = false;
+    private bool _canFix = true;
     public bool CanFix
     {
         get { return _canFix;}
@@ -38,12 +38,16 @@ public class ParticleSystemCheck : ICheck
         ParticleSystem[] particleSystems = go.GetComponentsInChildren<ParticleSystem>(true);
         foreach (var particleSystem in particleSystems)
         {
-            if (particleSystem.main.maxParticles>50)
-            {
-                right = false;
-                goPathList.Clear();
-                allPath(particleSystem.transform);
-                Debug.LogError(string.Format("{0} particleSystem({2}) maxParticles is {1}",path,particleSystem.main.maxParticles,goPath));
+
+            if (!particleSystem.trails.enabled)
+            { 
+                if (particleSystem.GetComponent<ParticleSystemRenderer>())
+                {
+                    if (particleSystem.GetComponent<ParticleSystemRenderer>().trailMaterial!=null)
+                    {
+                        right = false;
+                    }
+                }
             }
         }
 
@@ -52,6 +56,28 @@ public class ParticleSystemCheck : ICheck
 
     public bool Fix(string path)
     {
+        _assetPath = path;
+        GameObject go =  AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        if (go == null)
+        {
+            return true;
+        }
+        
+        bool right = true;
+        ParticleSystem[] particleSystems = go.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var particleSystem in particleSystems)
+        {
+
+            if (!particleSystem.trails.enabled)
+            {
+                if (particleSystem.GetComponent<ParticleSystemRenderer>())
+                {
+                    particleSystem.GetComponent<ParticleSystemRenderer>().trailMaterial = null;
+                }
+            }
+        }
+
+        PrefabUtility.SavePrefabAsset(go);
         return true;
     }
 
