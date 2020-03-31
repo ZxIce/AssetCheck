@@ -101,8 +101,8 @@ public class CheckManager
                 {
                     Debug.LogError(info+ "auto fix fail");
                 }
+                index++;
             }
-            AssetDatabase.SaveAssets();
         }
         EditorUtility.ClearProgressBar();
     }
@@ -112,13 +112,17 @@ public class CheckManager
         FileInfo file = new FileInfo(path);
         using (ExcelPackage myExcelPackage = new ExcelPackage(file))
         {
+            int filterIndex = 1;
             foreach (var filter in _settings.filters)
             {
                 if (!filter.valid)
                 {
+                    filterIndex++;
                     continue;
                 }
-                ExcelWorksheet worksheet = myExcelPackage.Workbook.Worksheets.Add(filter.CheckTagString);
+
+                ExcelWorksheet worksheet = null;
+                worksheet = myExcelPackage.Workbook.Worksheets.Add(filter.CheckTagString+filterIndex);
                 if (mDictionaryCheck.ContainsKey(filter.CheckTagString))
                 {
                     Type type = Type.GetType(filter.CheckTagString);
@@ -151,7 +155,8 @@ public class CheckManager
                     
                    
                 }
-                
+
+                filterIndex++;
             }
             // //创建ExcelWorkSheet对象，这个对象就是面对表的，是工作簿中单个表
             //

@@ -17,17 +17,29 @@ public class AssetsCheckPanel : EditorWindow
 
     private AssetsCheckSettings _settings;
     private SerializedObject _serializedObject;
-    const string savePath = "Assets/Editor/AssetsCheck/settings.asset";
+    private string savePath = "Assets/Editor/AssetsCheck/settings.asset";
     private string[] taglist = new[] {"a", "b"};
     void InitSettings()
     {
-        
+        LoadSettingsPath();
         _settings = AssetDatabase.LoadAssetAtPath<AssetsCheckSettings>(savePath);
         if (_settings == null)
         {
             _settings = CreateInstance<AssetsCheckSettings>();
         }
 
+        taglist = CheckManager.initCheckList(_settings).ToArray();
+        CheckTag();
+        _serializedObject = new SerializedObject(_settings);
+        SerializedProperty prop = _serializedObject.FindProperty("filters");
+        reorderableList = new ReorderableList(_serializedObject, prop, true, true, true, true);
+        reorderableList.elementHeight = 22;
+        reorderableList.drawElementCallback = OnListElementGUI;
+    }
+
+    void RefreshSettings()
+    {
+        savePath = AssetDatabase.GetAssetPath(_settings);
         taglist = CheckManager.initCheckList(_settings).ToArray();
         CheckTag();
         _serializedObject = new SerializedObject(_settings);
@@ -46,7 +58,7 @@ public class AssetsCheckPanel : EditorWindow
         }
         
         _serializedObject.Update();
-        
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Check", EditorStyles.toolbarButton))
         {
             CheckManager.StartChecks(_settings);
@@ -54,22 +66,74 @@ public class AssetsCheckPanel : EditorWindow
         if (GUILayout.Button("Check and Save", EditorStyles.toolbarButton))
         {
             CheckManager.StartChecksAndSaveData(_settings);
-            
         }
-        reorderableList.DoLayoutList();
-        _serializedObject.ApplyModifiedProperties();
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
+        EditorGUI.BeginChangeCheck();
+        _settings = EditorGUILayout.ObjectField( "settings",_settings, typeof(AssetsCheckSettings),true) as AssetsCheckSettings;
+        if (EditorGUI.EndChangeCheck())
+        {
+            if (_settings !=null)
+            {
+                RefreshSettings();
+            }
+        }
+        
+        if (GUILayout.Button("New",GUILayout.Width(50)))
+        {
+            CreateNewSettings();
+        }
+        EditorGUILayout.EndHorizontal();
+        if (_settings !=null)
+        {
+            reorderableList.DoLayoutList();
+            _serializedObject.ApplyModifiedProperties();
+        }
     }
-    
+
+    void LoadSettingsPath()
+    {
+        string path = EditorPrefs.GetString("SettingsPath");
+        if (string.IsNullOrEmpty(path))
+        {
+            EditorPrefs.SetString("SettingsPath",savePath);
+        }
+        else
+        {
+            savePath = path;
+        }
+    }
+
+    void SaveSettingsPath()
+    {
+        EditorPrefs.SetString("SettingsPath",savePath);
+    }
+
     private void OnEnable()
     {
         
     }
-
+    
     private void OnValidate()
     {
         if (_settings == null)
         {
             InitSettings();
+        }
+    }
+
+    void CreateNewSettings()
+    {
+        if (_settings)
+        {
+            EditorUtility.SetDirty(_settings);
+        }
+        savePath = savesettings();
+        if (!string.IsNullOrEmpty(savePath))
+        {
+            _settings = CreateInstance<AssetsCheckSettings>();
+            AssetDatabase.CreateAsset(_settings, savePath);
+            RefreshSettings();
         }
     }
 
@@ -83,6 +147,8 @@ public class AssetsCheckPanel : EditorWindow
         {
             EditorUtility.SetDirty(_settings);
         }
+
+        SaveSettingsPath();
     }
     void OnListElementGUI(Rect rect, int index, bool isactive, bool isfocused)
     {
@@ -151,6 +217,22 @@ public class AssetsCheckPanel : EditorWindow
         }
         return null;
     }
-
+    string savesettings()
+    {
+        string dataPath = Application.dataPath;
+        string savePath = EditorUtility.SaveFilePanel("Save Settings", dataPath, "defaultsettings.asset","asset");
+        if (!string.IsNullOrEmpty(savePath))
+        {
+            if (savePath.StartsWith(dataPath))
+            {
+                return "Assets/" + savePath.Substring(dataPath.Length + 1);
+            }
+            else
+            {
+                ShowNotification(new GUIContent("不能在Assets目录之外!"));
+            }
+        }
+        return null;
+    }
     
 }
