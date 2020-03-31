@@ -102,6 +102,7 @@ public class CheckManager
                     Debug.LogError(info+ "auto fix fail");
                 }
             }
+            AssetDatabase.SaveAssets();
         }
         EditorUtility.ClearProgressBar();
     }
