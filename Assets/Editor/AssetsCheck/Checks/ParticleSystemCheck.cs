@@ -63,7 +63,6 @@ public class ParticleSystemCheck : ICheck
             return true;
         }
         
-        bool right = true;
         ParticleSystem[] particleSystems = go.GetComponentsInChildren<ParticleSystem>(true);
         foreach (var particleSystem in particleSystems)
         {
