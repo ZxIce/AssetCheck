@@ -7,3 +7,6 @@ Assembly-CSharp-Editor.csproj
 AssetCheck.sln
 .idea
 obj
+Assets/Editor/AssetsCheck/AssetsCheck.xlsx
+Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
+Assets/Editor/AssetsCheck/AssetsCheck.xlsx.meta
